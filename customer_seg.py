@@ -5,9 +5,10 @@ import numpy as np
 import seaborn as sns
 import missingno as msno
 from matplotlib import pyplot as plt
+from matplotlib.ticker import AutoMinorLocator
 from sklearn.feature_selection import mutual_info_regression
 from sklearn.preprocessing import MinMaxScaler, LabelEncoder, StandardScaler, RobustScaler
-from yellowbrick.cluster import KElbowVisualizer
+# from yellowbrick.cluster import KElbowVisualizer
 
 pd.set_option('display.max_columns', None)
 pd.set_option('display.width', 170)
@@ -222,7 +223,10 @@ def check_skew(df_skew, column):
     print("{}'s: Skew: {}, : {}".format(column, skew, skewtest))
     return
 
-
+import os
+os.getcwd()
+os.chdir("D:\Documents\_MIUUL_")
+flo_data = pd.read_csv(r"WEEK 3/PROJECT_2/flo_data_20k.csv")
 df = flo_data.copy()
 
 df.head()
@@ -237,4 +241,57 @@ df["recency"] = (analysis_date - df["last_order_date"]).astype('timedelta64[D]')
 df["tenure"] = (df["last_order_date"]-df["first_order_date"]).astype('timedelta64[D]')
 
 model_df = df[["order_num_total_ever_online", "order_num_total_ever_offline", "customer_value_total_ever_offline", "customer_value_total_ever_online", "recency", "tenure"]]
+
+for col in [col for col in model_df.columns if model_df[col].dtypes != "object"]:
+    fig = plt.figure(figsize=(8,6))
+    g = sns.distplot(x=model_df[col], kde=False, color="orange",
+                     hist_kws=dict(edgecolor="black", linewidth=2))
+    g.set_title("Column: " + str(col))
+    g.xaxis.set_minor_locator(AutoMinorLocator(5))
+    g.yaxis.set_minor_locator(AutoMinorLocator(5))
+    g.tick_params(which="both", width=2)
+    g.tick_params(which="major", length=7)
+    g.tick_params(which="minor", length=4)
+    plt.show()
+
+for col in [col for col in model_df.columns if model_df[col].dtypes != "object"]:
+    fig = plt.figure(figsize=(8,6))
+    g = sns.distplot(x=np.log1p(model_df[col]), kde=False, color="orange",
+                     hist_kws=dict(edgecolor="black", linewidth=2))
+    g.set_title("Column: Logged " + str(col))
+    g.xaxis.set_minor_locator(AutoMinorLocator(5))
+    g.yaxis.set_minor_locator(AutoMinorLocator(5))
+    g.tick_params(which="both", width=2)
+    g.tick_params(which="major", length=7)
+    g.tick_params(which="minor", length=4)
+    plt.show()
+
+model_df["order_num_total_ever_offline"].value_counts().sort_values()
+
+fig = plt.figure(figsize=(8, 6))
+g = sns.distplot(x=np.sqrt(model_df["recency"]), kde=False, color="orange",
+                 hist_kws=dict(edgecolor="black", linewidth=2))
+g.set_title("Column: Sqrt " + "recency")
+g.xaxis.set_minor_locator(AutoMinorLocator(5))
+g.yaxis.set_minor_locator(AutoMinorLocator(5))
+g.tick_params(which="both", width=2)
+g.tick_params(which="major", length=7)
+g.tick_params(which="minor", length=4)
+plt.show()
+
+fig = plt.figure(figsize=(8, 6))
+g = sns.distplot(x=np.cbrt(model_df["tenure"]), kde=False, color="orange",
+                 hist_kws=dict(edgecolor="black", linewidth=2))
+g.set_title("Column: Cbrt " + "tenure")
+g.xaxis.set_minor_locator(AutoMinorLocator(5))
+g.yaxis.set_minor_locator(AutoMinorLocator(5))
+g.tick_params(which="both", width=2)
+g.tick_params(which="major", length=7)
+g.tick_params(which="minor", length=4)
+plt.show()
+
+# tenure: Cbrt
+# recency: sqrt
+# customer_value_total_ever_offline: log
+# customer_value_total_ever_online: log
 
