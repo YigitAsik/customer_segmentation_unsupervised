@@ -225,9 +225,7 @@ def check_skew(df_skew, column):
 
 import os
 os.getcwd()
-os.chdir("D:\Documents\_MIUUL_")
-flo_data = pd.read_csv(r"WEEK 3/PROJECT_2/flo_data_20k.csv")
-df = flo_data.copy()
+
 
 df.head()
 df.info()
