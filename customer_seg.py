@@ -1,11 +1,13 @@
 import joblib
 import pandas as pd
+import datetime as dt
 import numpy as np
 import seaborn as sns
 import missingno as msno
 from matplotlib import pyplot as plt
 from sklearn.feature_selection import mutual_info_regression
 from sklearn.preprocessing import MinMaxScaler, LabelEncoder, StandardScaler, RobustScaler
+from yellowbrick.cluster import KElbowVisualizer
 
 pd.set_option('display.max_columns', None)
 pd.set_option('display.width', 170)
@@ -220,4 +222,19 @@ def check_skew(df_skew, column):
     print("{}'s: Skew: {}, : {}".format(column, skew, skewtest))
     return
 
+
+df = flo_data.copy()
+
+df.head()
+df.info()
+
+date_columns = df.columns[df.columns.str.contains("date")]
+df[date_columns] = df[date_columns].apply(pd.to_datetime)
+
+analysis_date = dt.datetime(2021, 6, 1)
+
+df["recency"] = (analysis_date - df["last_order_date"]).astype('timedelta64[D]')  #how many days since last order
+df["tenure"] = (df["last_order_date"]-df["first_order_date"]).astype('timedelta64[D]')
+
+model_df = df[["order_num_total_ever_online", "order_num_total_ever_offline", "customer_value_total_ever_offline", "customer_value_total_ever_online", "recency", "tenure"]]
 
