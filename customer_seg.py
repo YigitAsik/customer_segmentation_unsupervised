@@ -342,3 +342,14 @@ k_means = KMeans(n_clusters=7, random_state=26).fit(scaled_model_df)
 segments = k_means.labels_
 
 pd.DataFrame(segments).value_counts()
+
+final_df = df[["master_id","order_num_total_ever_online","order_num_total_ever_offline","customer_value_total_ever_offline","customer_value_total_ever_online","recency","tenure"]]
+
+final_df["segment"] = segments
+
+final_df.groupby("segment").agg({"order_num_total_ever_online":["median","min","max"],
+                                  "order_num_total_ever_offline":["median","min","max"],
+                                  "customer_value_total_ever_offline":["median","min","max"],
+                                  "customer_value_total_ever_online":["median","min","max"],
+                                  "recency":["median", "min", "max"],
+                                  "tenure":["median", "min", "max"]})
