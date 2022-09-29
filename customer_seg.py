@@ -372,3 +372,19 @@ pca_df = pd.DataFrame(data=pca_fit, columns=["PC1", "PC2"])
 final_pc_df = pd.concat([pca_df, pd.DataFrame(y)], axis=1)
 
 final_pc_df.head()
+
+fig = plt.figure(figsize=(8, 6))
+g = sns.scatterplot(x=final_pc_df["PC1"], y=final_pc_df["PC2"], hue=final_pc_df["segment"],
+                    palette="viridis")
+g.xaxis.set_minor_locator(AutoMinorLocator(5))
+g.yaxis.set_minor_locator(AutoMinorLocator(5))
+g.tick_params(which="both", width=2)
+g.tick_params(which="major", length=7)
+g.tick_params(which="minor", length=4)
+plt.show()
+fig.savefig("PCs_viz.png", dpi=300)
+
+final_pc_df.groupby("segment").agg({
+    "PC1": ["mean", "median", "std"],
+    "PC2": ["mean", "median", "std"]
+})
