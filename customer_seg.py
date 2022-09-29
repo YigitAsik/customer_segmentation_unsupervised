@@ -8,7 +8,7 @@ from matplotlib import pyplot as plt
 from matplotlib.ticker import AutoMinorLocator
 from sklearn.feature_selection import mutual_info_regression
 from sklearn.preprocessing import MinMaxScaler, LabelEncoder, StandardScaler, RobustScaler
-# from yellowbrick.cluster import KElbowVisualizer
+from yellowbrick.cluster import KElbowVisualizer
 
 pd.set_option('display.max_columns', None)
 pd.set_option('display.width', 170)
@@ -226,6 +226,7 @@ def check_skew(df_skew, column):
 import os
 os.getcwd()
 
+df = flo_data.copy()
 
 df.head()
 df.info()
@@ -235,8 +236,8 @@ df[date_columns] = df[date_columns].apply(pd.to_datetime)
 
 analysis_date = dt.datetime(2021, 6, 1)
 
-df["recency"] = (analysis_date - df["last_order_date"]).astype('timedelta64[D]')  #how many days since last order
-df["tenure"] = (df["last_order_date"]-df["first_order_date"]).astype('timedelta64[D]')
+df["recency"] = (analysis_date - df["last_order_date"]).astype("timedelta64[D]")  #how many days since last order
+df["tenure"] = (df["last_order_date"]-df["first_order_date"]).astype("timedelta64[D]")
 
 model_df = df[["order_num_total_ever_online", "order_num_total_ever_offline", "customer_value_total_ever_offline", "customer_value_total_ever_online", "recency", "tenure"]]
 
@@ -292,4 +293,42 @@ plt.show()
 # recency: sqrt
 # customer_value_total_ever_offline: log
 # customer_value_total_ever_online: log
+
+model_df["tenure"] = np.cbrt(model_df["tenure"])
+model_df["recency"] = np.sqrt(model_df["recency"])
+model_df["customer_value_total_ever_online"] = np.log1p(model_df["customer_value_total_ever_online"])
+model_df["customer_value_total_ever_offline"] = np.log1p(model_df["customer_value_total_ever_offline"])
+
+for col in [col for col in model_df.columns if model_df[col].dtypes != "object"]:
+    fig = plt.figure(figsize=(8,6))
+    g = sns.distplot(x=model_df[col], kde=False, color="orange",
+                     hist_kws=dict(edgecolor="black", linewidth=2))
+    g.set_title("Column: " + str(col))
+    g.xaxis.set_minor_locator(AutoMinorLocator(5))
+    g.yaxis.set_minor_locator(AutoMinorLocator(5))
+    g.tick_params(which="both", width=2)
+    g.tick_params(which="major", length=7)
+    g.tick_params(which="minor", length=4)
+    plt.show()
+
+scaler = MinMaxScaler((0, 1))
+
+scaled_df = scaler.fit_transform(model_df)
+
+scaled_model_df = pd.DataFrame(scaled_df, columns=model_df.columns)
+
+scaled_model_df.head()
+
+for col in [col for col in scaled_model_df.columns if scaled_model_df[col].dtypes != "object"]:
+    fig = plt.figure(figsize=(8,6))
+    g = sns.distplot(x=scaled_model_df[col], kde=False, color="orange",
+                     hist_kws=dict(edgecolor="black", linewidth=2))
+    g.set_title("Column: " + str(col))
+    g.xaxis.set_minor_locator(AutoMinorLocator(5))
+    g.yaxis.set_minor_locator(AutoMinorLocator(5))
+    g.tick_params(which="both", width=2)
+    g.tick_params(which="major", length=7)
+    g.tick_params(which="minor", length=4)
+    plt.show()
+
 
