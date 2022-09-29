@@ -338,3 +338,7 @@ elbow = KElbowVisualizer(kmeans, k=(2, 20))
 elbow.fit(scaled_model_df)
 elbow.show()
 
+k_means = KMeans(n_clusters=7, random_state=26).fit(scaled_model_df)
+segments = k_means.labels_
+
+pd.DataFrame(segments).value_counts()
