@@ -353,3 +353,22 @@ final_df.groupby("segment").agg({"order_num_total_ever_online":["median","min","
                                   "customer_value_total_ever_online":["median","min","max"],
                                   "recency":["median", "min", "max"],
                                   "tenure":["median", "min", "max"]})
+
+
+pc_scaled_df = scaled_model_df.copy()
+
+pc_scaled_df["segment"] = segments
+
+from sklearn.decomposition import PCA
+
+pca = PCA(n_components=2)
+X = pc_scaled_df.drop("segment", axis=1)
+y = pc_scaled_df["segment"]
+
+pca_fit = pca.fit_transform(X)
+
+pca_df = pd.DataFrame(data=pca_fit, columns=["PC1", "PC2"])
+
+final_pc_df = pd.concat([pca_df, pd.DataFrame(y)], axis=1)
+
+final_pc_df.head()
