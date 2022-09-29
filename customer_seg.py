@@ -332,3 +332,9 @@ for col in [col for col in scaled_model_df.columns if scaled_model_df[col].dtype
     plt.show()
 
 
+from sklearn.cluster import KMeans
+kmeans = KMeans()
+elbow = KElbowVisualizer(kmeans, k=(2, 20))
+elbow.fit(scaled_model_df)
+elbow.show()
+
