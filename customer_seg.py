@@ -6,7 +6,6 @@ import seaborn as sns
 import missingno as msno
 from matplotlib import pyplot as plt
 from matplotlib.ticker import AutoMinorLocator
-from sklearn.feature_selection import mutual_info_regression
 from sklearn.preprocessing import MinMaxScaler, LabelEncoder, StandardScaler, RobustScaler
 from yellowbrick.cluster import KElbowVisualizer
 
